@@ -1,0 +1,3 @@
+^/\*$
+^ \* Copyright [\d]{4}((,[\s]*[\d]{4})*|(-[\d]{4})?) C Thing Software$
+^ \* SPDX-License-Identifier: Apache-2.0$
