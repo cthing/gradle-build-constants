@@ -28,7 +28,7 @@ plugins {
     alias(libs.plugins.versions)
 }
 
-version = ProjectVersion("1.0.0", BuildType.snapshot)
+version = ProjectVersion("1.0.0", BuildType.release)
 group = "org.cthing"
 description = "A Gradle plugin that generates a Java source file with constants describing the build."
 
