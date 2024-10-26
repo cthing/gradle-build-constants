@@ -6,7 +6,7 @@ junit = "5.11.2"
 spotbugs = "4.8.6"
 
 [plugins]
-cthingVersioning = { id = "org.cthing.cthing-versioning", version = "1.0.1" }
+cthingVersioning = { id = "org.cthing.cthing-versioning", version = "2.0.0" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version = "2.3.0" }
 pluginPublish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 spotbugs = { id = "com.github.spotbugs", version = "6.0.15" }
@@ -15,7 +15,7 @@ versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 [libraries]
 assertJ = "org.assertj:assertj-core:3.26.3"
 commonsIO = "commons-io:commons-io:2.17.0"
-cthingAnnots = "org.cthing:cthing-annotations:1.0.0"
+jspecify = "org.jspecify:jspecify:1.0.0"
 junitApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junitEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junitLauncher = "org.junit.platform:junit-platform-launcher:1.11.2"
