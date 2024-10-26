@@ -57,7 +57,7 @@ To generate the constants file called `MyConstants,java`, configure the `generat
 ```kotlin
 plugins {
     java
-    id("org.cthing.build-constants") version "1.0.0"
+    id("org.cthing.build-constants") version "2.0.0"
 }
 
 tasks {
@@ -75,7 +75,7 @@ import org.cthing.gradle.plugins.buildconstants.SourceAccess
 
 plugins {
     java
-    id("org.cthing.build-constants") version "1.0.0"
+    id("org.cthing.build-constants") version "2.0.0"
 }
 
 tasks {
@@ -168,7 +168,7 @@ The following Gradle and Java versions are supported:
 
 | Plugin Version | Gradle Version | Minimum Java Version |
 |----------------|----------------|----------------------|
-| 1.0.0+         | 8.2+           | 17                   |
+| 2.0.0+         | 8.2+           | 17                   |
 
 ## Building
 
