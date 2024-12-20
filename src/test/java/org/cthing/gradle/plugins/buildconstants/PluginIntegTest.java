@@ -32,6 +32,18 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class PluginIntegTest {
 
+    private static final Path BASE_DIR = Path.of(System.getProperty("buildDir"), "integTest");
+    private static final Path WORKING_DIR;
+
+    static {
+        try {
+            Files.createDirectories(BASE_DIR);
+            WORKING_DIR = Files.createTempDirectory(BASE_DIR, "working");
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private Path projectDir;
 
     public static Stream<Arguments> gradleVersionProvider() {
@@ -43,9 +55,7 @@ public class PluginIntegTest {
 
     @BeforeEach
     public void setup() throws IOException {
-        final Path baseDir = Path.of(System.getProperty("buildDir"), "integTest");
-        Files.createDirectories(baseDir);
-        this.projectDir = Files.createTempDirectory(baseDir, null);
+        this.projectDir = Files.createTempDirectory(BASE_DIR, "project");
     }
 
     @ParameterizedTest
@@ -135,6 +145,7 @@ public class PluginIntegTest {
     private GradleRunner createGradleRunner(final String gradleVersion) {
         return GradleRunner.create()
                            .withProjectDir(this.projectDir.toFile())
+                           .withTestKitDir(WORKING_DIR.toFile())
                            .withArguments("generateBuildConstants", "build")
                            .withPluginClasspath()
                            .withGradleVersion(gradleVersion);
