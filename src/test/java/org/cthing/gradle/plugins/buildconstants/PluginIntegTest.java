@@ -33,12 +33,12 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class PluginIntegTest {
 
     private static final Path BASE_DIR = Path.of(System.getProperty("buildDir"), "integTest");
-    private static final Path WORKING_DIR;
+    private static final Path WORKING_DIR = Path.of(System.getProperty("projectDir"), "testkit");
 
     static {
         try {
             Files.createDirectories(BASE_DIR);
-            WORKING_DIR = Files.createTempDirectory(BASE_DIR, "working");
+            Files.createDirectories(WORKING_DIR);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
