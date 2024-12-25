@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.jspecify)
 
     testImplementation(libs.assertJ)
+    testImplementation(libs.assertJGradle)
     testImplementation(libs.commonsIO)
     testImplementation(libs.junitApi)
     testImplementation(libs.junitParams)
