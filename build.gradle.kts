@@ -21,6 +21,7 @@ plugins {
     checkstyle
     jacoco
     signing
+    alias(libs.plugins.cthingPublishing)
     alias(libs.plugins.cthingVersioning)
     alias(libs.plugins.dependencyAnalysis)
     alias(libs.plugins.pluginPublish)
@@ -144,7 +145,7 @@ tasks {
 
     publishPlugins {
         doFirst {
-            if (!project.hasProperty("gradle.publish.key") || !project.hasProperty("gradle.publish.secret")) {
+            if (!cthingPublishing.hasGradlePluginPortalCredentials()) {
                 throw GradleException("Gradle Plugin Portal credentials not defined")
             }
         }
@@ -173,7 +174,7 @@ tasks {
 
     withType<Sign>().configureEach {
         onlyIf("Signing credentials are present") {
-            hasProperty("signing.keyId") && hasProperty("signing.password") && hasProperty("signing.secretKeyRingFile")
+            cthingPublishing.canSign()
         }
     }
 
@@ -190,16 +191,21 @@ tasks {
 }
 
 publishing {
-    val repoUrl = if ((version as ProjectVersion).isSnapshotBuild)
-        findProperty("cthing.nexus.snapshotsUrl") else findProperty("cthing.nexus.candidatesUrl")
+    afterEvaluate {
+        publications.withType<MavenPublication> {
+            pom(cthingPublishing.createPomAction())
+        }
+    }
+
+    val repoUrl = cthingRepo.repoUrl
     if (repoUrl != null) {
         repositories {
             maven {
                 name = "CThingMaven"
                 setUrl(repoUrl)
                 credentials {
-                    username = property("cthing.nexus.user") as String
-                    password = property("cthing.nexus.password") as String
+                    username = cthingRepo.user
+                    password = cthingRepo.password
                 }
             }
         }
