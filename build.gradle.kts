@@ -44,18 +44,18 @@ gradlePlugin {
     vcsUrl = "https://github.com/cthing/gradle-build-constants"
 
     plugins {
-        create("buildConstantsPlugin") {
+        create("buildConstantsPlugin", Action {
             id = "org.cthing.build-constants"
             displayName = "Java constants from build information"
             description = "A Gradle plugin that generates a Java source file with constants describing the build."
             tags = listOf("build", "project", "constants")
             implementationClass = "org.cthing.gradle.plugins.buildconstants.BuildConstantsPlugin"
-        }
+        })
     }
 }
 
 dependencies {
-    implementation(libs.jspecify)
+    compileOnly(libs.jspecify)
 
     testImplementation(libs.assertJ)
     testImplementation(libs.assertJGradle)

@@ -33,7 +33,7 @@ import org.gradle.api.tasks.TaskExecutionException;
 /**
  * Performs reading of the build information and generation of the build constants class.
  */
-public class BuildConstantsTask extends SourceTask {
+public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS CHECKSTYLE ok
 
     private static final Logger LOGGER = Logging.getLogger(BuildConstantsTask.class);
 
