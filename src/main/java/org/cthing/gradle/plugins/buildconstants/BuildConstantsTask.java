@@ -18,7 +18,6 @@ import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -33,33 +32,20 @@ import org.gradle.api.tasks.TaskExecutionException;
 /**
  * Performs reading of the build information and generation of the build constants class.
  */
-public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS CHECKSTYLE ok
+public abstract class BuildConstantsTask extends SourceTask {
 
     private static final Logger LOGGER = Logging.getLogger(BuildConstantsTask.class);
-
-    private final Property<String> classname;
-    private final DirectoryProperty outputDirectory;
-    private final Property<SourceAccess> sourceAccess;
-    private final Property<String> projectName;
-    private final Property<Object> projectVersion;
-    private final Property<Object> projectGroup;
-    private final Property<Long> buildTime;
-    private final MapProperty<String, Object> additionalConstants;
 
     public BuildConstantsTask() {
         setGroup("Generate Constants");
 
         final Project project = getProject();
         final Project rootProject = project.getRootProject();
-        final ObjectFactory objects = project.getObjects();
-        this.classname = objects.property(String.class);
-        this.outputDirectory = objects.directoryProperty();
-        this.sourceAccess = objects.property(SourceAccess.class).convention(SourceAccess.PUBLIC);
-        this.projectName = objects.property(String.class).convention(project.provider(rootProject::getName));
-        this.projectVersion = objects.property(Object.class).convention(project.provider(rootProject::getVersion));
-        this.projectGroup = objects.property(Object.class).convention(project.provider(rootProject::getGroup));
-        this.buildTime = objects.property(Long.class).convention(System.currentTimeMillis());
-        this.additionalConstants = objects.mapProperty(String.class, Object.class);
+        getSourceAccess().convention(SourceAccess.PUBLIC);
+        getProjectName().convention(project.provider(rootProject::getName));
+        getProjectVersion().convention(project.provider(rootProject::getVersion));
+        getProjectGroup().convention(project.provider(rootProject::getGroup));
+        getBuildTime().convention(System.currentTimeMillis());
     }
 
     /**
@@ -68,9 +54,7 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      * @return Fully qualified class name.
      */
     @Input
-    public Property<String> getClassname() {
-        return this.classname;
-    }
+    public abstract Property<String> getClassname();
 
     /**
      * Obtains the location on the filesystem for the generated class.
@@ -78,9 +62,7 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      * @return Output directory.
      */
     @OutputDirectory
-    public DirectoryProperty getOutputDirectory() {
-        return this.outputDirectory;
-    }
+    public abstract DirectoryProperty getOutputDirectory();
 
     /**
      * Obtains the access modifier for the generated constants. The default is {@link SourceAccess#PUBLIC}.
@@ -88,9 +70,7 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      * @return Access modifier for the generated constants.
      */
     @Input
-    public Property<SourceAccess> getSourceAccess() {
-        return this.sourceAccess;
-    }
+    public abstract Property<SourceAccess> getSourceAccess();
 
     /**
      * Obtains the name of the project. The default is obtained from {@link Project#getName()}.
@@ -98,9 +78,7 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      * @return Name of the project
      */
     @Input
-    public Property<String> getProjectName() {
-        return this.projectName;
-    }
+    public abstract Property<String> getProjectName();
 
     /**
      * Obtains the version of the project. The default is obtained from {@link Project#getVersion()}.
@@ -108,9 +86,7 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      * @return Version of the project
      */
     @Input
-    public Property<Object> getProjectVersion() {
-        return this.projectVersion;
-    }
+    public abstract Property<Object> getProjectVersion();
 
     /**
      * Obtains the group name of the project. The default is obtained from {@link Project#getGroup()}.
@@ -118,9 +94,7 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      * @return Group name of the project
      */
     @Input
-    public Property<Object> getProjectGroup() {
-        return this.projectGroup;
-    }
+    public abstract Property<Object> getProjectGroup();
 
     /**
      * Obtains the time the project was built as the number of milliseconds since the Unix Epoch.
@@ -129,9 +103,7 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      * @return Milliseconds since the Unix Epoch.
      */
     @Input
-    public Property<Long> getBuildTime() {
-        return this.buildTime;
-    }
+    public abstract Property<Long> getBuildTime();
 
     /**
      * Provides the capability to add custom constants to the source file. The constants will be written sorted
@@ -144,23 +116,21 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      */
     @Optional
     @Input
-    public MapProperty<String, Object> getAdditionalConstants() {
-        return this.additionalConstants;
-    }
+    public abstract MapProperty<String, Object> getAdditionalConstants();
 
     /**
      * Generates the build constants class.
      */
     @TaskAction
     public void generateConstants() {
-        final Provider<String> pathname = this.classname.map(cname -> cname.replace('.', '/') + ".java");
-        final File classFile = this.outputDirectory.file(pathname).get().getAsFile();
+        final Provider<String> pathname = getClassname().map(cname -> cname.replace('.', '/') + ".java");
+        final File classFile = getOutputDirectory().file(pathname).get().getAsFile();
         final File parentFile = classFile.getParentFile();
         if (!parentFile.exists() && !parentFile.mkdirs()) {
             throw new GradleException("Could not create directories " + parentFile);
         }
 
-        final String cname = this.classname.get();
+        final String cname = getClassname().get();
         final int pos = cname.lastIndexOf('.');
         assert pos != -1;
         final String packageName = cname.substring(0, pos);
@@ -182,7 +152,7 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
      * @param className  Name of the top level class (not qualified by the package name)
      */
     private void writeConstants(final PrintWriter writer, final String packageName, final String className) {
-        final String modifier = this.sourceAccess.get() == SourceAccess.PUBLIC ? "public " : "";
+        final String modifier = getSourceAccess().get() == SourceAccess.PUBLIC ? "public " : "";
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -198,15 +168,15 @@ public abstract class BuildConstantsTask extends SourceTask {       // SUPPRESS 
 
                       """, packageName, modifier, className);
 
-        writer.format("    %sstatic final String PROJECT_NAME = \"%s\";%n", modifier, this.projectName.get());
-        writer.format("    %sstatic final String PROJECT_VERSION = \"%s\";%n", modifier, this.projectVersion.get());
-        writer.format("    %sstatic final String PROJECT_GROUP = \"%s\";%n", modifier, this.projectGroup.get());
-        writer.format("    %sstatic final long BUILD_TIME = %dL;%n", modifier, this.buildTime.get());
+        writer.format("    %sstatic final String PROJECT_NAME = \"%s\";%n", modifier, getProjectName().get());
+        writer.format("    %sstatic final String PROJECT_VERSION = \"%s\";%n", modifier, getProjectVersion().get());
+        writer.format("    %sstatic final String PROJECT_GROUP = \"%s\";%n", modifier, getProjectGroup().get());
+        writer.format("    %sstatic final long BUILD_TIME = %dL;%n", modifier, getBuildTime().get());
         writer.format("    %sstatic final String BUILD_DATE = \"%s\";%n", modifier,
-                      dateFormat.format(new Date(this.buildTime.get())));
+                      dateFormat.format(new Date(getBuildTime().get())));
 
-        this.additionalConstants.keySet().get().stream().sorted().forEach(key -> {
-            final Object value = this.additionalConstants.getting(key).getOrNull();
+        getAdditionalConstants().keySet().get().stream().sorted().forEach(key -> {
+            final Object value = getAdditionalConstants().getting(key).getOrNull();
             if (value != null) {
                 if (value instanceof Integer v) {
                     writer.format("    %sstatic final int %s = %d;%n", modifier, key, v);
