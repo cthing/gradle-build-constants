@@ -5,8 +5,7 @@
 
 package org.cthing.gradle.plugins.buildconstants;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.File;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -50,18 +49,17 @@ public class BuildConstantsPlugin implements Plugin<Project> {
                     project.getTasks().register(taskName, BuildConstantsTask.class, task -> {
                         task.setDescription(String.format("Generates constants for the %s project build",
                                                           rootProject.getName()));
+                        task.getProjectName().convention(project.provider(rootProject::getName));
+                        task.getProjectGroup().convention(project.provider(rootProject::getGroup));
+                        task.getProjectVersion().convention(project.provider(rootProject::getVersion));
                         task.getOutputDirectory().convention(taskOutputDirectory);
-                        task.source(rootProject.getBuildFile());
-
-                        final Path projectDir = rootProject.getProjectDir().toPath();
-                        final Path gradleProperties = projectDir.resolve("gradle.properties");
-                        if (Files.exists(gradleProperties)) {
-                            task.source(gradleProperties);
-                        }
-                        final Path versionCatalog = projectDir.resolve("gradle").resolve("libs.versions.toml");
-                        if (Files.exists(versionCatalog)) {
-                            task.source(versionCatalog);
-                        }
+                        task.source(
+                                project.files(
+                                        rootProject.getBuildFile(),
+                                        rootProject.file("gradle.properties"),
+                                        rootProject.file("gradle/libs.versions.toml")
+                                ).filter(File::exists)
+                        );
                     });
 
             // Add the generated constants source file to the source set

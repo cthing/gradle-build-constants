@@ -39,12 +39,7 @@ public abstract class BuildConstantsTask extends SourceTask {
     public BuildConstantsTask() {
         setGroup("Generate Constants");
 
-        final Project project = getProject();
-        final Project rootProject = project.getRootProject();
         getSourceAccess().convention(SourceAccess.PUBLIC);
-        getProjectName().convention(project.provider(rootProject::getName));
-        getProjectVersion().convention(project.provider(rootProject::getVersion));
-        getProjectGroup().convention(project.provider(rootProject::getGroup));
         getBuildTime().convention(System.currentTimeMillis());
     }
 
