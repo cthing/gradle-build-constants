@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [2.1.0] - 2025-10-04
+
+### Changed
+
+- Allow plugin configuration to be cached.
+
 ## [2.0.0] - 2024-10-26
 
 ### Changed
@@ -19,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First release
 
-[unreleased]: https://github.com/cthing/gradle-build-constants/compare/2.0.0...HEAD
+[unreleased]: https://github.com/cthing/gradle-build-constants/compare/2.1.0...HEAD
+[2.1.0]: https://github.com/cthing/gradle-build-constants/releases/tag/2.1.0
 [2.0.0]: https://github.com/cthing/gradle-build-constants/releases/tag/2.0.0
 [1.0.0]: https://github.com/cthing/gradle-build-constants/releases/tag/1.0.0
